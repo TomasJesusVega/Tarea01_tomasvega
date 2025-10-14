@@ -11,14 +11,14 @@ public class Espectaculo implements Serializable {
 	private LocalDate fechaini;
 	private LocalDate fechafin;
 	private Long idCoord;
-	private Set<Numeros> numeros = new HashSet<>();
+	private Set<Numero> numeros = new HashSet<>();
 
 	public Espectaculo() {
 		super();
 	}
 
 	public Espectaculo(Long id, String nombre, LocalDate fechaini, LocalDate fechafin, Long idCoord,
-			Set<Numeros> numeros) {
+			Set<Numero> numeros) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -26,6 +26,14 @@ public class Espectaculo implements Serializable {
 		this.fechafin = fechafin;
 		this.idCoord = idCoord;
 		this.numeros = numeros;
+	}
+	
+	public Espectaculo(Long id, String nombre, LocalDate fechaini, LocalDate fechafin) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.fechaini = fechaini;
+		this.fechafin = fechafin;
 	}
 
 	public Long getId() {
@@ -68,11 +76,11 @@ public class Espectaculo implements Serializable {
 		this.idCoord = idCoord;
 	}
 
-	public Set<Numeros> getNumeros() {
+	public Set<Numero> getNumeros() {
 		return numeros;
 	}
 
-	public void setNumeros(Set<Numeros> numeros) {
+	public void setNumeros(Set<Numero> numeros) {
 		this.numeros = numeros;
 	}
 
