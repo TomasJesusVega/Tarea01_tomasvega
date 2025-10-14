@@ -2,5 +2,5 @@ package entidades;
 
 public enum Perfil {
 
-	ADMIN, COORDINACION, ARTISTA;
+	ADMIN, COORDINACION, ARTISTA, INVITADO;
 }
