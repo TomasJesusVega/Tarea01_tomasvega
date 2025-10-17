@@ -10,32 +10,24 @@ import utiles.Metodos;
 public class App {
 	public static void main(String[] args) {
 		Sesion nuevaSesion = new Sesion("Invitado", Perfil.INVITADO);
-
+		boolean a = true;
 		Metodos.crearFichero();
+		
+		do {
+			switch (nuevaSesion.getPerfil()) {
+			case INVITADO: {
+				Metodos.mostrarMenuInvitado(nuevaSesion);
+				a = false;
+				break;
+			}
+			default:
+				System.out.println("");
+			}
+		} while (a);
 	}
-//		if (!carpetaFicheros.exists()) {
-//			carpetaFicheros.mkdir();
-//			System.out.println("Carpeta ficheros creada en: " + carpetaFicheros.getAbsolutePath());
-//		} else {
-//			try (ObjectOutputStream oos = new ObjectOutputStream(
-//					new FileOutputStream("ficheros/espectaculos.dat"))) {
-//				oos.writeObject(espectaculo1);
-//				System.out.println(
-//						"Archivo espectaculo.dat creado dentro de la carpeta ficheros.");
-//			} catch (IOException e) {
-//				System.out.println("Error");
-//			}
-//		}
 
-//	System.out.println("============================================");
-//	System.out.println(" ");
-//	System.out.println("	Programa de gestion de circo");
-//	System.out.println(" ");
-//	System.out.println(" ");
-//	System.out.println("	Por Tomas Jesus Vega Leiva");
-//	System.out.println(" ");
-//	System.out.println("============================================");
-//	System.out.println(" ");
+
+
 
 //	public static void mostrarMenuInvitado(Sesion nuevaSesion) {
 //		System.out.println("Sesion: " + nuevaSesion.toString());
