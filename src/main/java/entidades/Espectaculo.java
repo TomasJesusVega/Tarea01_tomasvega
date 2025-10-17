@@ -27,7 +27,7 @@ public class Espectaculo implements Serializable {
 		this.idCoord = idCoord;
 		this.numeros = numeros;
 	}
-	
+
 	public Espectaculo(Long id, String nombre, LocalDate fechaini, LocalDate fechafin) {
 		super();
 		this.id = id;
@@ -82,6 +82,11 @@ public class Espectaculo implements Serializable {
 
 	public void setNumeros(Set<Numero> numeros) {
 		this.numeros = numeros;
+	}
+
+	@Override
+	public String toString() {
+		return "Espectaculo [nombre=" + nombre + ", fechaini=" + fechaini + ", fechafin=" + fechafin + "]";
 	}
 
 }

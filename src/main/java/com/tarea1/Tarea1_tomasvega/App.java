@@ -1,20 +1,9 @@
 package com.tarea1.Tarea1_tomasvega;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
-
-import entidades.Espectaculo;
-import entidades.Numero;
 import entidades.Perfil;
 import entidades.Sesion;
 import utiles.Metodos;
+
 /**
  * Hello world!
  */
@@ -22,11 +11,8 @@ public class App {
 	public static void main(String[] args) {
 		Sesion nuevaSesion = new Sesion("Invitado", Perfil.INVITADO);
 
-		Espectaculo espectaculo1 = new Espectaculo(1L, "Espectaculo 1",
-				LocalDate.of(2025, 6, 1), LocalDate.of(2025, 1, 30));
 		Metodos.crearFichero();
 	}
-//		File carpetaFicheros = new File("ficheros/espectaculos.dat");
 //		if (!carpetaFicheros.exists()) {
 //			carpetaFicheros.mkdir();
 //			System.out.println("Carpeta ficheros creada en: " + carpetaFicheros.getAbsolutePath());
@@ -79,4 +65,5 @@ public class App {
 //		System.out.println("1. Ver ficha");
 //		System.out.println("2. Logout");
 //	}
+
 }
