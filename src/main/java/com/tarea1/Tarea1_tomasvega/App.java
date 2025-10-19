@@ -1,8 +1,11 @@
 package com.tarea1.Tarea1_tomasvega;
 
+import java.util.Scanner;
+
 import entidades.Perfil;
 import entidades.Sesion;
 import utiles.Metodos;
+import utiles.Objetos;
 
 /**
  * Hello world!
@@ -10,52 +13,146 @@ import utiles.Metodos;
 public class App {
 	public static void main(String[] args) {
 		Sesion nuevaSesion = new Sesion("Invitado", Perfil.INVITADO);
-		boolean a = true;
-		Metodos.crearFichero();
-		
+		boolean ejecucion = true;
+		Scanner sc = new Scanner(System.in);
+		System.out.println("============================================");
+		System.out.println(" ");
+		System.out.println("	Programa de gestion de circo");
+		System.out.println(" ");
+		System.out.println(" ");
+		System.out.println("	Por Tomas Jesus Vega Leiva");
+		System.out.println(" ");
+		System.out.println("============================================");
+		System.out.println(" ");
+
 		do {
 			switch (nuevaSesion.getPerfil()) {
 			case INVITADO: {
-				Metodos.mostrarMenuInvitado(nuevaSesion);
-				a = false;
+				Metodos.menuInvitado(nuevaSesion);
+				int opcion = sc.nextInt();
+				switch (opcion) {
+				case 1: {
+					System.out.println("Inicio de Sesion");
+					System.out.println("Usuario: ");
+					System.out.println("Contrasenia: ");
+					break;
+				}
+
+				case 2: {
+					System.out.println("Lista de espectaculos");
+					break;
+				}
+
+				case 3: {
+					sc.nextLine();
+					System.out.println("Desea cerrar el programa? Y para si, N para no");
+					String opcionSalir = sc.nextLine();
+					Metodos.cerrarPrograma(opcionSalir, ejecucion);
+					System.out.println(ejecucion);
+					break;
+					
+				}
+				default:
+					System.out.println("Caso default");
+				}
+				break;
+			}
+
+			case ARTISTA: {
+				Metodos.menuArtista(nuevaSesion);
+				int opcion = sc.nextInt();
+				switch (opcion) {
+				case 1: {
+					System.out.println("Lista de espectaculos");
+					Metodos.guardarEspectaculo();
+					break;
+				}
+				case 2: {
+					sc.nextLine();
+					System.out.println("Desea cerrar la sesion y volver al perfil de invitado? Y para si, N para no");
+					String opcionSalir = sc.nextLine();
+					if (opcionSalir.equalsIgnoreCase("Y")) {
+						nuevaSesion.setNombre("Invitado");
+						nuevaSesion.setPerfil(Perfil.INVITADO);
+						break;
+					} else if (opcionSalir.equalsIgnoreCase("N")) {
+						break;
+					} else {
+						System.out.println("Opcion invalida");
+						sc.nextLine();
+						break;
+					}
+				}
+				default:
+					System.out.println("Valores Invalidos");
+				}
+				break;
+			}
+
+			case COORDINACION: {
+				Metodos.menuCoordinacion(nuevaSesion);
+				int opcion = sc.nextInt();
+				switch (opcion) {
+				case 1: {
+					sc.nextLine();
+					int opcionCoord = sc.nextInt();
+					System.out.println("Gestion de espectaculos");
+					System.out.println("1.Crear espoectaculo");
+					System.out.println("2. Gestionar espectaculo");
+					switch (opcionCoord) {
+					case 1: {
+
+						break;
+					}
+					case 2: {
+						break;
+					}
+					case 3: {
+						sc.nextLine();
+						String opcionSalir = sc.nextLine();
+						Metodos.logOut(nuevaSesion, opcionSalir);
+						
+						break;
+					}
+					default:
+						System.out.println("Valor invalido");
+					}
+
+				}
+
+				case 2: {
+					sc.nextLine();
+					System.out.println("Desea cerrar la sesion y volver al perfil de invitado? Y para si, N para no");
+					String opcionSalir = sc.nextLine();
+					if (opcionSalir.equalsIgnoreCase("Y")) {
+						nuevaSesion.setNombre("Invitado");
+						nuevaSesion.setPerfil(Perfil.INVITADO);
+						break;
+					} else if (opcionSalir.equalsIgnoreCase("N")) {
+						break;
+					} else {
+						System.out.println("Opcion invalida");
+						sc.nextLine();
+						break;
+					}
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + opcion);
+				}
+				break;
+			}
+
+			case ADMIN: {
+				Metodos.menuAdmin(nuevaSesion);
+
 				break;
 			}
 			default:
-				System.out.println("");
+				System.out.println("Caso default");
 			}
-		} while (a);
+			
+			
+		} while (ejecucion);
+		sc.close();
 	}
-
-
-
-
-//	public static void mostrarMenuInvitado(Sesion nuevaSesion) {
-//		System.out.println("Sesion: " + nuevaSesion.toString());
-//		System.out.println("1. Login");
-//		System.out.println("2. Ver espectaculos");
-//		System.out.println("3. Salir");
-//
-//	}
-//
-//	public static void mostrarMenuCoordinacion(Sesion nuevaSesion) {
-//		System.out.println("Sesion: " + nuevaSesion.toString());
-//		System.out.println("1. Gestionar Espectaculos");
-//		System.out.println("2. Logout");
-//	}
-//
-//	//tener en cuenta si el usuario hace altf4
-//	
-//	public static void mostrarMenuAdmin(Sesion nuevaSesion) {
-//		System.out.println("Sesion: " + nuevaSesion.toString());
-//		System.out.println("1. Gestionar personas y credenciales");
-//		System.out.println("2. Gestionar espectaculos");
-//		System.out.println("3. Logout");
-//	}
-//
-//	public static void mostrarMenuArtista(Sesion nuevaSesion) {
-//		System.out.println("Sesion: " + nuevaSesion.toString());
-//		System.out.println("1. Ver ficha");
-//		System.out.println("2. Logout");
-//	}
-
 }

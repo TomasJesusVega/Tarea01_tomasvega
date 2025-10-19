@@ -2,7 +2,10 @@ package utiles;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
+
+
 
 import entidades.Espectaculo;
 
@@ -14,6 +17,7 @@ public class Objetos {
 			LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 28));
 	protected static Espectaculo espectaculo3 = new Espectaculo(3L, "Espectaculo 3",
 			LocalDate.of(2025, 3, 1), LocalDate.of(2025, 3, 30));
+	
 	
 	
 }
