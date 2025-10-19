@@ -15,15 +15,10 @@ public class App {
 		Sesion nuevaSesion = new Sesion("Invitado", Perfil.INVITADO);
 		boolean ejecucion = true;
 		Scanner sc = new Scanner(System.in);
-		System.out.println("============================================");
-		System.out.println(" ");
-		System.out.println("	Programa de gestion de circo");
-		System.out.println(" ");
-		System.out.println(" ");
-		System.out.println("	Por Tomas Jesus Vega Leiva");
-		System.out.println(" ");
-		System.out.println("============================================");
-		System.out.println(" ");
+		System.out.println("============================================\n");
+		System.out.println("	Programa de gestion de circo\n\n");
+		System.out.println("	Por Tomas Jesus Vega Leiva\n");
+		System.out.println("============================================\n");
 
 		do {
 			switch (nuevaSesion.getPerfil()) {
@@ -47,10 +42,9 @@ public class App {
 					sc.nextLine();
 					System.out.println("Desea cerrar el programa? Y para si, N para no");
 					String opcionSalir = sc.nextLine();
-					Metodos.cerrarPrograma(opcionSalir, ejecucion);
-					System.out.println(ejecucion);
+					ejecucion = Metodos.cerrarPrograma(opcionSalir);
 					break;
-					
+
 				}
 				default:
 					System.out.println("Caso default");
@@ -111,7 +105,7 @@ public class App {
 						sc.nextLine();
 						String opcionSalir = sc.nextLine();
 						Metodos.logOut(nuevaSesion, opcionSalir);
-						
+
 						break;
 					}
 					default:
@@ -150,8 +144,7 @@ public class App {
 			default:
 				System.out.println("Caso default");
 			}
-			
-			
+
 		} while (ejecucion);
 		sc.close();
 	}

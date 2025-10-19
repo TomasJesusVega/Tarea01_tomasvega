@@ -14,8 +14,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
+
+import com.sun.source.tree.DoWhileLoopTree;
 
 import entidades.Espectaculo;
 import entidades.Perfil;
@@ -55,17 +58,33 @@ public class Metodos extends Objetos {
 		}
 	}
 
-	public static void crearEspectaculo() {
-
+	public static void crearEspectaculo(Scanner sc, String nombre, boolean a) {
+		do {
+			System.out.println("Introduzca un nombre para el espectaculo");
+			nombre = sc.nextLine();
+			if (nombre.length() > 25) {
+				System.out.println("Error: El nombre no debe exceder los 25 caracteres");
+			} else {
+				
+			}
+		} while (a);
+		
+		
 	}
 
+	public static void leerEspectaculo(Set<Espectaculo> espectaculosGuardados) {
+		for (Iterator iterator = espectaculosGuardados.iterator(); iterator.hasNext();) {
+			
+		}
+	}
 	public static Set<Espectaculo> guardarEspectaculo() {
-		Set<Espectaculo> espectaculosIniciales = new HashSet<>();
-		return espectaculosIniciales;
+		Set<Espectaculo> espectaculosGuardados = new HashSet<>();
+		
+		return espectaculosGuardados;
 	}
 
 	public static void menuInvitado(Sesion nuevaSesion) {
-		System.out.println("Sesion: " + nuevaSesion.getNombre());
+		System.out.println("Sesion actual: " + nuevaSesion.getNombre());
 		System.out.println("1. Login");
 		System.out.println("2. Ver espectaculos");
 		System.out.println("3. Cerrar programa");
@@ -74,7 +93,7 @@ public class Metodos extends Objetos {
 
 	public static void menuAdmin(Sesion nuevaSesion) {
 
-		System.out.println("Sesion: " + nuevaSesion.getNombre());
+		System.out.println("Sesion actual: " + nuevaSesion.getNombre());
 		System.out.println("1. Gestionar personas y credenciales");
 		System.out.println("2. Gestionar espectaculos");
 		System.out.println("3. Logout");
@@ -82,14 +101,14 @@ public class Metodos extends Objetos {
 	}
 
 	public static void menuArtista(Sesion nuevaSesion) {
-		System.out.println("Sesion: " + nuevaSesion.getNombre());
+		System.out.println("Sesion actual: " + nuevaSesion.getNombre());
 		System.out.println("1. Ver ficha");
 		System.out.println("2. Logout");
 
 	}
 
 	public static void menuCoordinacion(Sesion nuevaSesion) {
-		System.out.println("Sesion: " + nuevaSesion.getNombre());
+		System.out.println("Sesion actual: " + nuevaSesion.getNombre());
 		System.out.println("1. Gestionar Espectaculos");
 		System.out.println("2. Logout");
 
@@ -106,23 +125,27 @@ public class Metodos extends Objetos {
 			break;
 		}
 		default:
-			System.out.println("Opcion invalida");
+			System.out.println("Opcion Invalida, solo se admite Y o N. \n");
 		}
 	}
 	
-	public static void cerrarPrograma(String opcionSalir, boolean ejecucion) {
+	public static boolean cerrarPrograma(String opcionSalir) {
 		switch (opcionSalir.toUpperCase()) {
 		case "Y": {
 			System.out.println("Saliendo...");
-			ejecucion = false;
-			break;
+			return false;
 		}
 		
 		case "N": {
-			break;
+			return true;
+		}
+		
+		case " ": {
 		}
 		default:
-			System.out.println("Opcion Invalida");
+			System.out.println("Opcion Invalida, solo se admite Y o N. \n");
+			return true;
 		}
 	}
+	
 }
