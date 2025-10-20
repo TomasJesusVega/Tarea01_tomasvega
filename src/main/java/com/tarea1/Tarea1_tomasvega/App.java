@@ -20,6 +20,9 @@ public class App {
 		System.out.println("	Por Tomas Jesus Vega Leiva\n");
 		System.out.println("============================================\n");
 
+		Metodos.crearFichero();
+		Metodos.crearEspectaculosIniciales();
+		
 		do {
 			switch (nuevaSesion.getPerfil()) {
 			case INVITADO: {

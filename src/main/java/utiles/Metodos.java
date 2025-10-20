@@ -38,20 +38,6 @@ public class Metodos extends Objetos {
 		if (!fichero.exists()) {
 			fichero.mkdirs();
 			System.out.println("Carpeta " + fichero.getName() + " creada en " + fichero.getAbsolutePath());
-			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("ficheros/espectaculo.dat"))) {
-				oos.writeObject(Objetos.espectaculo1);
-				oos.writeObject(Objetos.espectaculo2);
-				oos.writeObject(Objetos.espectaculo3);
-			} catch (IOException | ClassCastException e) {
-				System.err.println("Error al guardar el espectáculo: " + e.getMessage());
-			}
-			System.out.println("Espectaculos.dat creada en " + fichero.getAbsolutePath());
-			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("ficheros/espectaculo.dat"))) {
-				Object espectaculoOis = ois.readObject();
-				System.out.println(espectaculoOis);
-			} catch (IOException | ClassNotFoundException e) {
-				System.err.println("Error al leer Espectaculos.dat" + e.getMessage());
-			}
 		} else {
 			if (fichero.exists()) {
 				System.out.println("La carpeta ya existe");
@@ -60,6 +46,28 @@ public class Metodos extends Objetos {
 		}
 	}
 
+	public static void crearEspectaculosIniciales(File fichero) {
+		if(!fichero.exists()) {
+			System.out.println("La carpeta ficheros no existe");
+		} else {
+			if (fichero.exists()) {
+				try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("ficheros/espectaculo.dat"))) {
+					oos.writeObject(Objetos.espectaculo1);
+					oos.writeObject(Objetos.espectaculo2);
+					oos.writeObject(Objetos.espectaculo3);
+				} catch (IOException | ClassCastException e) {
+					System.err.println("Error al guardar el espectáculo: " + e.getMessage());
+				}
+				System.out.println("Espectaculos.dat creada en " + fichero.getAbsolutePath());
+				try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("ficheros/espectaculo.dat"))) {
+					Object espectaculoOis = ois.readObject();
+					System.out.println(espectaculoOis);
+				} catch (IOException | ClassNotFoundException e) {
+					System.err.println("Error al leer Espectaculos.dat" + e.getMessage());
+				}
+			}
+		}
+	}
 	public static void crearEspectaculo(Scanner sc, boolean a) {
 		do {
 			sc.next();
