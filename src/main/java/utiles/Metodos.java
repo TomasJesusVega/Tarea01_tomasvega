@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -58,29 +60,30 @@ public class Metodos extends Objetos {
 		}
 	}
 
-	public static void crearEspectaculo(Scanner sc, String nombre, boolean a) {
+	public static void crearEspectaculo(Scanner sc, boolean a) {
 		do {
+			sc.next();
 			System.out.println("Introduzca un nombre para el espectaculo");
-			nombre = sc.nextLine();
-			if (nombre.length() > 25) {
-				System.out.println("Error: El nombre no debe exceder los 25 caracteres");
+			String nombre = sc.nextLine();
+			if (nombre.length() > 25 | nombre.length() == 0) {
+				System.out.println("Error: El nombre debe tener entre 1 y 25 caracteres");
 			} else {
-				
+				do {
+					sc.next();
+					System.out.println("Introduzca fecha inicial");
+					String fechaInicial = sc.nextLine();
+					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd. MM. yyyy");
+					LocalDate.parse(fechaInicial,dtf);
+					
+				} while (a);
 			}
 		} while (a);
 		
 		
 	}
-
-	public static void leerEspectaculo(Set<Espectaculo> espectaculosGuardados) {
-		for (Iterator iterator = espectaculosGuardados.iterator(); iterator.hasNext();) {
-			
-		}
-	}
-	public static Set<Espectaculo> guardarEspectaculo() {
-		Set<Espectaculo> espectaculosGuardados = new HashSet<>();
+	
+	public static void guardarEspectaculo() {
 		
-		return espectaculosGuardados;
 	}
 
 	public static void menuInvitado(Sesion nuevaSesion) {
