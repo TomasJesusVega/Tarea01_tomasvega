@@ -86,11 +86,21 @@ public class Metodos extends Objetos {
 	
 	//CU2 Login
 	public static void validarLogin(Scanner sc) {
-		
+		boolean sesionIniciada = false;
+		String usuario;
+		do {
+			System.out.println("Introduzca nombre de usuario");
+			usuario = sc.nextLine();
+			if (usuario.matches("[a-zA-Z]*")) {
+				
+			}
+			
+		} while (!sesionIniciada);
 	}
 	
 	//CU2 LogOut
 	public static void validarlogOut(Sesion nuevaSesion, String opcionSalir) {
+		
 		switch (opcionSalir.toUpperCase()) {
 		case "Y": {
 			nuevaSesion.setNombre("Invitado");
@@ -144,27 +154,30 @@ public class Metodos extends Objetos {
 		String fecha = null;
 		LocalDate fechaInicial = null;
 		LocalDate fechaFinal = null;
-		Period duracion = Period.between(fechaInicial, fechaFinal);
+		boolean esValido = false;
+		
 		
 		do {
 			try {
+				sc.nextLine();
 				System.out.println("Introduzca la fecha de inicio del espectaculo");
 				fecha = sc.nextLine();
 				fechaInicial = LocalDate.parse(fecha, dtf);
-				sc.nextLine();
 				System.out.println("Introduzca la fecha final del espectaculo");
 				fecha = sc.nextLine();
 				fechaFinal = LocalDate.parse(fecha, dtf);
+				Period duracion = Period.between(fechaInicial, fechaFinal);
 				if (fechaFinal.isBefore(fechaInicial)) {
 					System.out.println("La fecha final no puede ser anterior a la fecha inicial del espectaculo");
-				}
-				if(duracion.getYears() >= 1) {
+				} else if(duracion.getYears() >= 1) {
 					System.out.println("La duracion del espectaculo no puede exceder el anio");
+				} else {
+					esValido = true;
 				}
 			} catch (DateTimeParseException e) {
 				System.err.println("Error en el formato de las fechas " + e.getMessage());
 			}
-		} while (fechaInicial == null && fechaFinal == null);
+		} while (fechaInicial == null && fechaFinal == null && esValido);
 	}
 
 	public static void validarGestionEspectaculo() {
@@ -185,8 +198,8 @@ public class Metodos extends Objetos {
 	
 	public static void menuInvitadoLogin() {
 		System.out.println("Inicio de Sesion");
-		System.out.println("Usuario: ");
-		System.out.println("Contrasenia: ");
+		System.out.println("1.Usuario: ");
+		System.out.println("2.Contrasenia: ");
 
 	}
 

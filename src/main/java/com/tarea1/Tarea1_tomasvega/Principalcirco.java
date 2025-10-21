@@ -10,7 +10,7 @@ import utiles.Objetos;
 /**
  * Hello world!
  */
-public class App {
+public class Principalcirco {
 	public static void main(String[] args) {
 		Sesion nuevaSesion = new Sesion("Invitado", Perfil.INVITADO);
 		boolean ejecucion = true;
@@ -32,8 +32,9 @@ public class App {
 				}
 
 				case 2: {
-					System.out.println("Lista de espectaculos");
-					break;
+					System.out.println("Prueba fecha espectaculos");
+					Metodos.validarFechaEspectaculo(sc);
+					
 				}
 
 				case 3: {
@@ -59,20 +60,7 @@ public class App {
 					break;
 				}
 				case 2: {
-					sc.nextLine();
-					System.out.println("Desea cerrar la sesion y volver al perfil de invitado? Y para si, N para no");
-					String opcionSalir = sc.nextLine();
-					if (opcionSalir.equalsIgnoreCase("Y")) {
-						nuevaSesion.setNombre("Invitado");
-						nuevaSesion.setPerfil(Perfil.INVITADO);
-						break;
-					} else if (opcionSalir.equalsIgnoreCase("N")) {
-						break;
-					} else {
-						System.out.println("Opcion invalida");
-						sc.nextLine();
-						break;
-					}
+					
 				}
 				default:
 					System.out.println("Valores Invalidos");
@@ -114,25 +102,12 @@ public class App {
 				}
 
 				case 2: {
-					sc.nextLine();
-					System.out.println("Desea cerrar la sesion y volver al perfil de invitado? Y para si, N para no");
-					String opcionSalir = sc.nextLine();
-					if (opcionSalir.equalsIgnoreCase("Y")) {
-						nuevaSesion.setNombre("Invitado");
-						nuevaSesion.setPerfil(Perfil.INVITADO);
-						break;
-					} else if (opcionSalir.equalsIgnoreCase("N")) {
-						break;
-					} else {
-						System.out.println("Opcion invalida");
-						sc.nextLine();
-						break;
-					}
+					Metodos.validarlogOut(nuevaSesion, null);
 				}
 				default:
 					throw new IllegalArgumentException("Unexpected value: " + opcion);
 				}
-				break;
+				
 			}
 
 			case ADMIN: {
