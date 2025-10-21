@@ -19,9 +19,6 @@ public class App {
 		System.out.println("	Programa de gestion de circo\n\n");
 		System.out.println("	Por Tomas Jesus Vega Leiva\n");
 		System.out.println("============================================\n");
-
-		Metodos.crearFichero();
-		Metodos.crearEspectaculosIniciales();
 		
 		do {
 			switch (nuevaSesion.getPerfil()) {
@@ -30,9 +27,7 @@ public class App {
 				int opcion = sc.nextInt();
 				switch (opcion) {
 				case 1: {
-					System.out.println("Inicio de Sesion");
-					System.out.println("Usuario: ");
-					System.out.println("Contrasenia: ");
+					
 					break;
 				}
 
@@ -61,7 +56,6 @@ public class App {
 				switch (opcion) {
 				case 1: {
 					System.out.println("Lista de espectaculos");
-					Metodos.guardarEspectaculo();
 					break;
 				}
 				case 2: {
@@ -98,7 +92,9 @@ public class App {
 					System.out.println("2. Gestionar espectaculo");
 					switch (opcionCoord) {
 					case 1: {
-
+						Metodos.validarNombreEspectaculo(sc);
+						Metodos.validarFechaEspectaculo(sc);
+						
 						break;
 					}
 					case 2: {
@@ -107,7 +103,7 @@ public class App {
 					case 3: {
 						sc.nextLine();
 						String opcionSalir = sc.nextLine();
-						Metodos.logOut(nuevaSesion, opcionSalir);
+						Metodos.validarlogOut(nuevaSesion, opcionSalir);
 
 						break;
 					}
