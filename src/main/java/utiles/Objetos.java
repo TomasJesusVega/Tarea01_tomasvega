@@ -24,6 +24,5 @@ public class Objetos {
 		espectaculos.add(espectaculo3);
 	}
 	
-	protected static Credenciales credenciales1 = new Credenciales();
-	protected static ArrayList<Credenciales> credenciales = new ArrayList<>();
+	
 }
