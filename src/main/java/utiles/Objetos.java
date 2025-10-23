@@ -1,11 +1,7 @@
 package utiles;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
-import entidades.Credenciales;
 import entidades.Espectaculo;
 /**
  * Objetos tipo espectaculo

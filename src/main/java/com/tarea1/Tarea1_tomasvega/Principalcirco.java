@@ -5,7 +5,6 @@ import java.util.Scanner;
 import entidades.Perfil;
 import entidades.Sesion;
 import utiles.Metodos;
-import utiles.Objetos;
 
 /**
  * Hello world!

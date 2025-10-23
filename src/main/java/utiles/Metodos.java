@@ -23,7 +23,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
@@ -731,6 +730,11 @@ public class Metodos extends Objetos {
 		
 	}
 
+	/**
+	 * 
+	 * @param nombre
+	 * @return
+	 */
 	public static boolean buscarNombreReal(String nombre) {
 		for (String credencial : listaCredenciales) {
 			String[] partes = credencial.split("\\s*\\|\\s*");
@@ -778,6 +782,12 @@ public class Metodos extends Objetos {
 		return false;
 	}
 
+	/**
+	 * Metodo que recorre el archivo credenciales para buscar si coincide un nombre de usuario
+	 * introducido con alguna credencial usuario
+	 * @param nombreUsuario
+	 * @return retorna un booleano que indica si se encontro alguna coincidencia
+	 */
 	public static boolean buscarNombreUsuario(String nombreUsuario) {
 		for (String credencial : listaCredenciales) {
 			String[] partes = credencial.split("\\s*\\|\\s*");
@@ -813,7 +823,7 @@ public class Metodos extends Objetos {
 
 	/**
 	 * Metodo que genera ids autoincrementales para cada persona nueva creada
-	 * @return
+	 * @return retorna un tipo long que se le asigna a cada nueva persona
 	 */
 	public static long generarIdPersona() {
 	    try {   
