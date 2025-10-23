@@ -194,6 +194,7 @@ public class Metodos extends Objetos {
 
 	public static boolean verificarAdmin(String usuario, String contrasenia) {
 		Properties propiedad = new Properties();
+		
 		try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")){
 			propiedad.load(input);
 			
@@ -204,12 +205,22 @@ public class Metodos extends Objetos {
 		}
 		String usuarioAdmin = propiedad.getProperty("usuarioAdmin");
         String contraseniaAdmin = propiedad.getProperty("contraseniaAdmin");
-		if (usuarioAdmin.equals(usuario) && "admin".equals(contrasenia)) {
+        
+		if (usuarioAdmin.equals(usuario) && contraseniaAdmin.equals(contrasenia)) {
 			
 			return true;
 		}
 		return false;
 	}
+	
+	public static Sesion asignarAdmin(Sesion nuevaSesion, boolean verificarAdmin) {
+			if (verificarAdmin) {
+				nuevaSesion.setNombre("admin");
+				nuevaSesion.setPerfil(Perfil.ADMIN);
+			}
+		return nuevaSesion;
+	}
+	
 	public static Sesion asignarPerfil(Sesion nuevaSesion) {
 		for (String credencial : listaCredenciales) {
 			String[] partes = credencial.split("\\s*\\|\\s*");
@@ -233,12 +244,6 @@ public class Metodos extends Objetos {
 			
 		}
 		
-		if (nuevaSesion.getNombre().equalsIgnoreCase("admin")) {
-			nuevaSesion.setPerfil(Perfil.ADMIN);
-			
-			return nuevaSesion;
-			
-		}
 		
 		return nuevaSesion;
 	}
@@ -634,8 +639,13 @@ public class Metodos extends Objetos {
 				
 				contrasenia = sc.nextLine().trim();
 				
-				sesionIniciada = verificarLogin(usuario, contrasenia);
 				esAdmin = verificarAdmin(usuario, contrasenia);
+				if (!esAdmin) {
+					sesionIniciada = verificarLogin(usuario, contrasenia);
+					nuevaSesion = asignarPerfil(nuevaSesion);
+				} else {
+					nuevaSesion = asignarAdmin(nuevaSesion, esAdmin);
+				}
 				
 				nuevaSesion = asignarPerfil(nuevaSesion);
 				
