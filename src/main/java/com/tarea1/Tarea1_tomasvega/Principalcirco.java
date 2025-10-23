@@ -24,7 +24,7 @@ public class Principalcirco {
 		Metodos.iniciarPrograma();
 		do {
 			if (nuevaSesion.getPerfil().equals(Perfil.INVITADO)) {
-				System.out.println("Sesion actual: " + nuevaSesion.getNombre() + "\n");
+				System.out.println("\nSesion actual: " + nuevaSesion.getNombre() + "\n");
 				
 				opcion = Metodos.menuInvitado(sc, opcion);
 				
@@ -62,7 +62,7 @@ public class Principalcirco {
 			}
 			
 			if (nuevaSesion.getPerfil().equals(Perfil.ARTISTA)){
-				System.out.println("Sesion actual: " + nuevaSesion.getNombre() + "\n");
+				System.out.println("\nSesion actual: " + nuevaSesion.getNombre() + "\n");
 				
 				opcion = Metodos.menuArtista(sc, opcion);
 				
@@ -80,6 +80,8 @@ public class Principalcirco {
 					
 					Metodos.validarlogOut(nuevaSesion, sc);
 					
+					break;
+					
 				}
 				default:
 					System.err.println("Como llegaste hasta aqui?");
@@ -88,7 +90,7 @@ public class Principalcirco {
 			}
 			
 			if (nuevaSesion.getPerfil().equals(Perfil.COORDINACION)) {
-				System.out.println("Sesion actual: " + nuevaSesion.getNombre() + "\n");
+				System.out.println("\nSesion actual: " + nuevaSesion.getNombre() + "\n");
 				
 				opcion = Metodos.menuCoordinacion(sc, opcion);
 				
@@ -101,18 +103,24 @@ public class Principalcirco {
 					switch (segundaOpcion) {
 					case 1: {
 						
+						break;
+						
 					}
 					case 2: {
+						
+						break;
 						
 					}
 					default:
 						throw new IllegalArgumentException("Unexpected value: " + segundaOpcion);
 					}
+					
 				}
 				case 2: {
 					Metodos.consumirLinea(sc);
 					
 					Metodos.validarlogOut(nuevaSesion, sc);
+					break;
 					
 				}
 				default:
@@ -123,19 +131,26 @@ public class Principalcirco {
 			
 			if (nuevaSesion.getPerfil().equals(Perfil.ADMIN)) {
 				
-				System.out.println("Sesion actual: " + nuevaSesion.getNombre() + "\n");
+				System.out.println("\nSesion actual: " + nuevaSesion.getNombre() + "\n");
 				
 				opcion = Metodos.menuAdmin(sc, opcion);
 				
 				switch (opcion) {
 				case 1: {
 					Metodos.consumirLinea(sc);
-					Metodos.menuAdminGestionaPersona(sc);
 					
+					Metodos.menuAdminRegistraPersona(sc);
+					
+					Metodos.mostrarCredenciales();
+					
+					break;
 				}
 				case 2: {
 					Metodos.consumirLinea(sc);
+					
 					Metodos.menuAdminGestionaEspectaculo(sc);
+					
+					break;
 				}
 				
 				case 3: {
@@ -143,6 +158,7 @@ public class Principalcirco {
 					
 					Metodos.validarlogOut(nuevaSesion, sc);
 					
+					break;
 				}
 				default:
 					System.err.println("Como llegaste hasta aqui?");

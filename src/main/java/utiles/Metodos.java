@@ -21,10 +21,12 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,17 +36,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
+import entidades.Espectaculo;
 import entidades.Perfil;
 import entidades.Sesion;
 
 public class Metodos extends Objetos {
 
-	/*
-	 * IMPORTANTE recordar eliminar el directorio ficheros antes de ejecutar el
-	 * programa en caso de usar este metodo. Metodo que crea una carpeta donde se
-	 * almacenara los archivos creados por el programa y/o externos
-	 */
-
+	private static Set<Espectaculo> espectaculos = new HashSet<>();
+	
 	private static ArrayList<String> listaCredenciales = new ArrayList<>();
 	private static ArrayList<String> listaNombrePais = new ArrayList<>();
 	private static ArrayList<String> listaIdPais = new ArrayList<>();
@@ -55,6 +54,19 @@ public class Metodos extends Objetos {
 	private static String rutaEspectaculo = "ficheros/espectaculo.dat";
 	private static String rutaCredenciales = "ficheros/credenciales.txt";
 
+	public static void aniadirCredenciales() {
+		listaCredenciales.add("1|luisdbb|miP@ss|luisdbb@educastur.org|Luis de Blas|España|coordinacion");
+		listaCredenciales.add("2|camila|cam1las|camilas@circo.es|Camila Sánchez|Bolivia|artista");
+		
+	}
+
+	public static void aniadirEspectaculo() {
+		espectaculos.add(espectaculo1);
+		espectaculos.add(espectaculo2);
+		espectaculos.add(espectaculo3);
+		
+	}
+	
 	public static void crearFichero() {
 		if (!fichero.exists()) {
 			fichero.mkdirs();
@@ -67,13 +79,16 @@ public class Metodos extends Objetos {
 		}
 	}
 
+	/**
+	 * Metodo que aniade 3 espectaculos de ejemplo 
+	 */
 	public static void crearEspectaculosIniciales() {
 		if (!fichero.exists()) {
 			System.out.println("No se encontro la carpeta ficheros, compruebe si ha sido creada");
 			
 		} else if (fichero.exists()) {
 			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(rutaEspectaculo))) {
-				oos.writeObject(Objetos.espectaculos);
+				oos.writeObject(espectaculos);
 				
 				System.out.println("Espectaculos.dat creada en " + fichero.getAbsolutePath());
 				
@@ -83,7 +98,6 @@ public class Metodos extends Objetos {
 			}
 		}
 	}
-
 	
 	public static void crearCredenciales() {
 		if (!fichero.exists()) {
@@ -97,38 +111,22 @@ public class Metodos extends Objetos {
 				}
 				
 			} catch (IOException e) {
-				System.err.println("Error al crear las credenciales en credendiales.dat " + e.getMessage());
-				
-			}
-		}
-	}
-	
-	public static void aniadirCredenciales() {
-		listaCredenciales.add("1|luisdbb|miP@ss|luisdbb@educastur.org|Luis de Blas|España|coordinacion");
-		listaCredenciales.add("2|camila|cam1las|camilas@circo.es|Camila Sánchez|Bolivia|artista");
-	}
-
-
-	public static void leerCredenciales() {
-		if (!fichero.exists()) {
-			System.out.println("No se encontro la carpeta ficheros, compruebe si ha sido creada");
-			
-		} else if (fichero.exists()) {
-			try (BufferedReader br = new BufferedReader(new FileReader(rutaCredenciales))) {
-				
-				String linea;
-				
-				while ((linea = br.readLine()) != null) {
-					listaCredenciales.add(linea);
-					
-				}
-			} catch (IOException e) {
 				System.err.println("Error al crear las credenciales en credendiales.txt " + e.getMessage());
 				
 			}
 		}
 	}
 
+	public static void mostrarCredenciales() {
+	    if (listaCredenciales.isEmpty()) {
+	        System.out.println("No hay credenciales registradas para mostrar.");
+	    } else {
+	        System.out.println("Lista de credenciales\n");
+	        for (String credencial : listaCredenciales) {
+	            System.out.println(credencial);
+	        }
+	    }
+	}
 	// CU1 ver espectaculos
 	public static void leerEspectaculos() {
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(rutaEspectaculo))) {
@@ -174,49 +172,71 @@ public class Metodos extends Objetos {
 		}
 	}
 
-	// CU2 Login
+	/**
+	 * Metodo que comprueba si las credenciales introducidas por el usuario coinciden con alguna credencial
+	 * del archivo credenciales.txt
+	 * @param usuario
+	 * @param contrasenia
+	 * @return booleano que indica si hay o no un inicio de sesion
+	 */
 	public static boolean verificarLogin(String usuario, String contrasenia) {
-		
 		for (String credencial : listaCredenciales) {
 			String[] partes = credencial.split("\\s*\\|\\s*");
 			String usuarioEncontrado = partes[1].trim();
 			String contraseniaEncontrada = partes[2].trim();
 			
 			if (usuarioEncontrado.equals(usuario) && contraseniaEncontrada.equals(contrasenia)) {
+				System.out.println("Sesion iniciada correctamente\n");
 				return true;
 				
 			}
 		}
-		
 		System.err.println("Error al iniciar sesion");
-		System.out.println("Credenciales incorrectas, intentelo de nuevo\n");
-		
+		System.out.println("Credenciales invalidas, vuelva a intentarlo");
 		return false;
+		
 	}
 
+	/**
+	 * 
+	 * @param usuario
+	 * @param contrasenia
+	 * @return
+	 */
 	public static boolean verificarAdmin(String usuario, String contrasenia) {
-		Properties propiedad = new Properties();
-		
-		try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")){
-			propiedad.load(input);
+			Properties propiedad = new Properties();
 			
-		} catch (IOException e) {
-			System.err.println("Error al cargar el archivo");
-			System.out.println("El archivo application.properties no se cargo");
+			try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")){
+				propiedad.load(input);
+				
+			} catch (IOException e) {
+				System.err.println("Error al cargar el archivo");
+				System.out.println("El archivo application.properties no se cargo");
+				
+			}
 			
-		}
+			String usuarioAdmin = propiedad.getProperty("usuarioAdmin").trim();
+	        String contraseniaAdmin = propiedad.getProperty("contraseniaAdmin").trim();
+
+			if (usuarioAdmin.equals(usuario) && contraseniaAdmin.equals(contrasenia)) {
+				System.out.println("Sesion iniciada correctamente vA");
+				return true;
+				
+				
+			} else {
+				
+				return false;
+			}
 		
-		String usuarioAdmin = propiedad.getProperty("usuarioAdmin");
-        String contraseniaAdmin = propiedad.getProperty("contraseniaAdmin");
-        
-		if (usuarioAdmin.equals(usuario) && contraseniaAdmin.equals(contrasenia)) {
-			return true;
-			
-		}
-		
-		return false;
 	}
 	
+	/**
+	 * Metodo que asigna el nombre y perfil correspondientes al admin en caso de que se haya verificado
+	 * que lo es
+	 * @param nuevaSesion
+	 * @param esAdmin
+	 * @return retorna un objeto Sesion al que se le asigna el nombre y perfil correspondiente
+	 */
 	public static Sesion asignarAdmin(Sesion nuevaSesion, boolean esAdmin) {
 			if (esAdmin) {
 				nuevaSesion.setNombre("admin");
@@ -226,6 +246,12 @@ public class Metodos extends Objetos {
 			return null;
 	}
 	
+	/**
+	 * Metodo que asigna un perfil al objeto Sesion en funcion del valor encontrado dentro del archivo
+	 * credenciales.txt
+	 * @param nuevaSesion
+	 * @return retorna un objeto Sesion al que se le asigna el nombre correspondiente
+	 */
 	public static Sesion asignarPerfil(Sesion nuevaSesion) {
 		for (String credencial : listaCredenciales) {
 			String[] partes = credencial.split("\\s*\\|\\s*");
@@ -252,8 +278,11 @@ public class Metodos extends Objetos {
 		return nuevaSesion;
 	}
 	
-	
-	// CU2 LogOut
+	/**
+	 * 
+	 * @param nuevaSesion
+	 * @param sc
+	 */
 	public static void validarlogOut(Sesion nuevaSesion, Scanner sc) {
 		boolean esValido = false;
 		
@@ -262,23 +291,28 @@ public class Metodos extends Objetos {
 		do {
 			System.out.println("Desea cerrar la sesion? Y para si, N para no");
 			
-			opcionSalir = sc.nextLine();
+			opcionSalir = sc.nextLine().trim();
 			
 			switch (opcionSalir.toUpperCase()) {
 			case "Y": {
 				nuevaSesion.setNombre("Invitado");
 				nuevaSesion.setPerfil(Perfil.INVITADO);
+				
 				esValido = true;
+				
 				break;
 				
 			}
 			case "N": {
 				esValido = true;
+				
 				break;
 				
 			}
 			case " ": {
-				
+				System.err.println("Error al introducir la opcion");
+				System.out.println("Asegurese de no dejar en blanco el campo\n");
+				break;
 			}
 			default:
 				System.out.println("Opcion Invalida, solo se admite Y o N. \n");
@@ -308,8 +342,9 @@ public class Metodos extends Objetos {
 				
 			}
 			case " ": {
-				System.out.println("No puedes dejar en blanco este espcio");
-				
+				System.err.println("Error al introducir una opcion");
+				System.out.println("Asegurese de no dejar en blanco el campo\n");
+				break;
 			}
 			default:
 				System.err.println("Error al seleccionar una opcion");
@@ -335,6 +370,10 @@ public class Metodos extends Objetos {
 			 if (!nombre.matches("^[a-zA-Z ]+$")) {
 				System.err.println("Error al introducir el nombre");
 				System.out.println("Asegurese de usar caracteres validos! (caracteres de la A a la Z y espacios) \n");
+				esValido = false;
+			} else if(nombre.isEmpty()) {
+				System.err.println("Error al introducir el nombre");
+				System.out.println("Asegurese de no dejar en blanco el campo");
 				esValido = false;
 			} else {
 				esValido = true;
@@ -366,6 +405,11 @@ public class Metodos extends Objetos {
 		return email;
 	}
 
+	/**
+	 * Metodo que comprueba si el nombre de usuario introducido es valido
+	 * @param sc
+	 * @return retorna una cadena de caracteres correspondiente al nombre de usuario de una persona
+	 */
 	public static String validarNombreUsuario(Scanner sc) {
 		boolean esValido = false;
 		
@@ -380,19 +424,41 @@ public class Metodos extends Objetos {
 				System.err.println("Error al introducir el nombre");
 				System.out.println("Asegurese de usar caracteres validos! (caracteres de la A a la Z) \n");
 				
-				esValido = true;
+				esValido = false;
 
 			} else if (nombreUsuario.length() < 2) {
 				System.err.println("Error al introducier el usuario");
 				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
+				
+				esValido = false;
+				
+			} else if(nombreUsuario.isEmpty()) {
+				System.err.println("Error al introducir el usuario");
+				System.out.println("Asegurese de no dejar en blanco el campo");
+				
+				esValido = false;
+				
+			} else if(buscarNombreUsuario(nombreUsuario) == true) {
+				System.out.println("Lo sentimos, pero este nombre de usuario no esta disponible, introduzca otro");
+				
+				esValido = false;
+				
+			} else {
+				esValido = true;
 				
 			}
 			
 		} while (!esValido);
 		
 		return nombreUsuario;
+		
 	}
 
+	/**
+	 * Metodo que comprueba si la contrasenia introducida es valida
+	 * @param sc
+	 * @return retona una cadena de caracteres correspondiente a la contrasenia de una persona
+	 */
 	public static String validarContrasenia(Scanner sc) {
 		boolean esValido = false;
 		
@@ -403,11 +469,13 @@ public class Metodos extends Objetos {
 			
 			contrasenia = sc.nextLine().trim();
 			
-			if (!contrasenia.isEmpty()) {
+			if (contrasenia.isEmpty()) {
+				System.err.println("Error al introducir el usuario");
+				System.out.println("Asegurese de no dejar en blanco el campo");
 				esValido = false;
 				
 			} else if (contrasenia.length() < 2) {
-				System.err.println("Error al introducier el usuario");
+				System.err.println("Error al introducir el usuario");
 				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
 				
 				esValido = false;
@@ -418,9 +486,16 @@ public class Metodos extends Objetos {
 			}
 			
 		} while (!esValido);
+		
 		return contrasenia;
+		
 	}
 
+	/**
+	 * Metodo que comprueba si la nacionalidad introducida es valida
+	 * @param sc
+	 * @return retorna una cadena de caracteres correspondiente a la nacionalidad de una persona
+	 */
 	public static String validarNacionalidad(Scanner sc) {
 		boolean esValido = false;
 		boolean encontrado = false;
@@ -460,30 +535,48 @@ public class Metodos extends Objetos {
 			}
 
 		} while (!esValido);
+		
 		return nacionalidad;
+		
 	}
 
-	// CU5 a.Crear espectaculo
-	public static void validarNombreEspectaculo(Scanner sc) {
-		String nombre;
-		
+	/**
+	 * Metodo que comprueba si el nombre del espectaculo introducido es valido
+	 * @param sc
+	 * @return retorna una cadena de caracteres correspondiente al nombre de un espectaculo
+	 */
+	public static String validarNombreEspectaculo(Scanner sc) {
+		String nombreEspectaculo = null;
+		boolean esValido = false;
 		do {
 			System.out.println("Introduzca un nombre para el espectaculo entre 1 y 25 caracteres:");
 			
-			nombre = sc.nextLine().trim();
+			nombreEspectaculo = sc.nextLine().trim();
 			
-			if (nombre.length() > 25 || nombre.length() == 0) {
-				System.out.println("Error al registrar el nombre, debe tener entre 1 y 25 caracteres");
+			if (nombreEspectaculo.length() > 25 || nombreEspectaculo.length() == 0) {
+				System.err.println("Error al registrar el nombre");
+				System.out.println("Asegurese que la longitud del nombre sea la adecuada (entre 1 y 25 caracteres)\n");
 				
-			} else if (nombre.isEmpty()) {
-				System.out.println();
+			} else if(buscarNombreEspectaculo(nombreEspectaculo)) {
+				System.err.println("Error al registrar el nombre");
+				System.out.println("Ya existe un espectaculo con ese nombre");
+			} else if (nombreEspectaculo.isEmpty()) {
+				System.err.println("Error al introducir el nombre del espectaculo");
+				System.out.println("Asegurese de no dejar en blanco el campo");
 				
+			} else {
+				esValido = true;
 			}
 			
-		} while (nombre.isEmpty() && nombre.length() > 25);
+		} while (!esValido);
+		
+		return nombreEspectaculo;
 	}
 
-	// CU5 a.Crear espectaculo
+	/**
+	 * Metodo que comprueba si las fechas introducidas para el espectaculo son validas
+	 * @param sc
+	 */
 	public static void validarFechaEspectaculo(Scanner sc) {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		
@@ -517,20 +610,25 @@ public class Metodos extends Objetos {
 					System.out.println("La duracion del espectaculo no puede exceder el anio");
 					
 				} else {
-					System.out.println("Espectaculo aniadido con exito");
 					esValido = true;
 					
 				}
 
 			} catch (DateTimeParseException e) {
 				System.err.println("Error en el formato de las fechas ");
-				System.out.println("Asegurese de usar el formato correcto! (dd-mm-aaaa)");
+				System.out.println("Asegurese de usar el formato correcto! (dd-mm-aaaa)\n");
 				
 			}
 	
 		} while (!esValido);
+		
 	}
 
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public static String validarPerfilPersona(Scanner sc) {
 		String perfil = null;
 		
@@ -542,11 +640,17 @@ public class Metodos extends Objetos {
 				
 				 perfil = sc.nextLine().trim();
 				
-				if (perfil.equalsIgnoreCase("ADMIN") || perfil.equalsIgnoreCase("COORDINACION") || perfil.equalsIgnoreCase("ARTISTA")) {
+				if (perfil.isEmpty()) {
+					System.err.println("Error al introducir el perfil");
+					System.out.println("Asegurese de no dejar en blanco el campo");
+					
+				} else if (perfil.equalsIgnoreCase("ADMIN") || perfil.equalsIgnoreCase("COORDINACION") || perfil.equalsIgnoreCase("ARTISTA")) {
 					esValido = true;
 					
 				} else {
 					System.out.println("No se ha encontrado un perfil");
+					
+					esValido = false;
 					
 				}
 				
@@ -556,9 +660,75 @@ public class Metodos extends Objetos {
 				
 			}
 		
-		} while (esValido);
+		} while (!esValido);
 		
 		return perfil;
+	}
+	
+	public static String validarApodo(Scanner sc) {
+		boolean esValido = false;
+		
+		String apodo = null;
+		
+		do {
+			System.out.println("Introduzca el apodo de la persona artista");
+			
+			apodo = sc.nextLine().trim();
+			
+			if (apodo.isEmpty()) {
+				System.err.println("Error al introducir el apodo");
+				System.out.println("Asegurese de no dejar en blanco el campo\n");
+				
+			} else if (!apodo.matches("[a-zA-Z]*")) {
+				System.err.println("Error al introducir el nombre");
+				System.out.println("Asegurese de usar caracteres validos! (caracteres de la A a la Z) \n");
+				
+				esValido = false;
+
+			} else if (apodo.length() < 2) {
+				System.err.println("Error al introducier el usuario");
+				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
+				
+				esValido = false;
+				
+			} else {
+				esValido = true;
+				
+			}
+			
+		} while (!esValido);
+		
+		return apodo;
+		
+	}
+	
+	public static String validarEspecialidad(Scanner sc) {
+		boolean esValido = false;
+		
+		String especialidad = null;
+		
+		do {
+			System.out.println("Introduzca las especialidades del artista");
+			
+			especialidad = sc.nextLine().trim();
+			
+			if (especialidad.equalsIgnoreCase("ACROBACIA") || especialidad.equalsIgnoreCase("MAGIA") || especialidad.equalsIgnoreCase("HUMOR") || 
+				especialidad.equalsIgnoreCase("EQUILIBRISMO") || especialidad.equalsIgnoreCase("MALABARISMO")) {
+				esValido = true;
+				
+			} else {
+				System.err.println("Error al introducir la especialidad");
+				
+				System.out.println("No se ha encontrado la especialidad introducida, intentelo de nuevo");
+				
+				esValido = false;
+				
+			}
+			
+		} while (!esValido);
+
+		return especialidad;
+		
 	}
 
 	public static boolean buscarNombreReal(String nombre) {
@@ -608,13 +778,13 @@ public class Metodos extends Objetos {
 		return false;
 	}
 
-	public static boolean buscarNombreUsuario(String nombre) {
+	public static boolean buscarNombreUsuario(String nombreUsuario) {
 		for (String credencial : listaCredenciales) {
 			String[] partes = credencial.split("\\s*\\|\\s*");
 			String usuarioActual = partes[1].trim();
 			String nombreUsuarioEncontrado = partes[4].trim().toUpperCase();
 			
-			if (nombreUsuarioEncontrado.equalsIgnoreCase(nombre)) {
+			if (nombreUsuarioEncontrado.equalsIgnoreCase(nombreUsuario)) {
 				return true;
 				
 			}
@@ -622,6 +792,18 @@ public class Metodos extends Objetos {
 		return false;
 	}
 	
+	private static boolean buscarNombreEspectaculo(String nombreEspectaculo) {
+		for(Espectaculo esp:espectaculos) {
+			if(esp.getNombre().equalsIgnoreCase(nombreEspectaculo)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
+	 * Metodo que vacia el buffer del Scanner
+	 * @param sc
+	 */
 	public static void consumirLinea(Scanner sc) {
 		if (sc.hasNextLine()) {
 			sc.nextLine();
@@ -629,12 +811,55 @@ public class Metodos extends Objetos {
 		}
 	}
 
-	public static void nuevoIdPersona() {
-		int contador = 2;
-		for(String id : listaCredenciales) {
-//			String[] linea = id[1].trim()
-		}
-
+	/**
+	 * Metodo que genera ids autoincrementales para cada persona nueva creada
+	 * @return
+	 */
+	public static long generarIdPersona() {
+	    try {   
+	        if (!fichero.exists()) {
+	            return 1L;
+	            
+	        } else if(fichero.exists()){
+	        	BufferedReader reader = new BufferedReader(new FileReader(rutaCredenciales));
+	        	
+		        String ultimaLinea = "";
+		        String lineaActual;
+		        
+		        while ((lineaActual = reader.readLine()) != null) {
+		            if (!lineaActual.trim().isEmpty()) {
+		                ultimaLinea = lineaActual;
+		                
+		            }
+		        }
+		        reader.close();
+		        
+		        if (ultimaLinea.isEmpty()) {
+		            return 1L;
+		            
+		        }
+		        
+		        String[] partes = ultimaLinea.split("\\|");
+		        
+		        if (partes.length > 0) {
+		            try {
+		                long ultimoId = Long.parseLong(partes[0].trim());
+		                
+		                return ultimoId + 1;
+		                
+		            } catch (NumberFormatException e) {
+		               
+		                return 1L;
+		            }
+		        }
+	        }
+	        
+	        
+	    } catch (IOException e) {
+	        System.out.println("Error al leer el archivo de credenciales: " + e.getMessage());
+	    }
+	    
+	    return 1L;
 	}
 
 	// Metodos menu
@@ -645,7 +870,7 @@ public class Metodos extends Objetos {
 		
 		do {
 			try {
-				System.out.println("Introduzca el numero al lado de la opcion para seleccionarla");
+				System.out.println("\nIntroduzca el numero al lado de la opcion para seleccionarla \n");
 				System.out.println("1. Login");
 				System.out.println("2. Ver espectaculos");
 				System.out.println("3. Cerrar programa");
@@ -655,6 +880,9 @@ public class Metodos extends Objetos {
 				if (opcion > 0 && opcion <= 3) {
 					esValido = true;
 					
+				} else {
+					System.err.println("Error al seleccionar una opcion");
+					System.out.println("Asegurese de introducir caracteres validos! (digitos del 1 al 3)");
 				}
 				
 			} catch (InputMismatchException e) {
@@ -669,6 +897,12 @@ public class Metodos extends Objetos {
 		return opcion;
 	}
 
+	/**
+	 * Metodo que pide al usuario iniciar sesion con un nombre de usuario y una contrasenia
+	 * @param sc
+	 * @param nuevaSesion
+	 * @return retorna un objeto Sesion con el nombre y el perfil correspondientes a las credenciales introducidas
+	 */
 	public static Sesion menuInvitadoLogin(Scanner sc, Sesion nuevaSesion) {
 		boolean sesionIniciada = false;
 		boolean esAdmin = false;
@@ -696,13 +930,12 @@ public class Metodos extends Objetos {
 					
 				} else if (!esAdmin){
 					sesionIniciada = verificarLogin(usuario, contrasenia);
-					
-	                nuevaSesion = asignarPerfil(nuevaSesion);
-	                
-	                System.out.println("Sesión iniciada correctamente.\n");
+
+					nuevaSesion = asignarPerfil(nuevaSesion);
 	                
 				} else {
-					System.err.println("Credenciales incorrectas. Inténtelo de nuevo.\n");
+					System.err.println("Error al iniciar sesion");
+					System.out.println("Credenciales incorrectas, intentelo de nuevo");
 					
 				}
 				
@@ -720,6 +953,12 @@ public class Metodos extends Objetos {
 		return nuevaSesion;
 	}
 
+	/**
+	 * 
+	 * @param sc
+	 * @param opcion
+	 * @return
+	 */
 	public static int menuAdmin(Scanner sc, int opcion) {
 		boolean esValido = false;
 		
@@ -750,49 +989,66 @@ public class Metodos extends Objetos {
 		return opcion;
 	}
 
+	
+	
 	public static void menuSeleccionPerfil(Scanner sc, String perfil) {
-		if (perfil.equalsIgnoreCase("ARTISTA")) {
-			System.out.println("Introduzca el apodo de la persona artista");
-			
-			String apodo = sc.nextLine();
-			
-			System.out.println("Introduzca las especialidades del artista");
-			
-			String especialidades = sc.nextLine();
-			
-		}
-		
-		if (perfil.equalsIgnoreCase("COORDINACION")) {
-			System.out.println("Es el la persona coordinadora senior? Y para si, N para no");
-			
-			String esSenior = sc.nextLine();
-			
-			switch (esSenior) {
-			case "Y": {
-				System.out.println("Introduzca la fecha en la que empezo a ser senior");
-				break;
+		boolean esValido = false;
+		do {
+			if (perfil.equalsIgnoreCase("ARTISTA")) {
+				String apodo = validarApodo(sc);
 				
-			}
-			case "N": {
-				break;
+				String especialidad = validarEspecialidad(sc);
+				esValido = true;
 				
-			}
+			} else if (perfil.equalsIgnoreCase("COORDINACION")) {
+				System.out.println("Es el la persona coordinadora senior? Y para si, N para no");
+				
+				String esSenior = sc.nextLine();
+				
+				switch (esSenior) {
+				case "Y": {
+					System.out.println("Introduzca la fecha en la que empezo a ser senior");
+					
+					String fecha = sc.nextLine();
+					
+					esValido = true;
+					
+					break;
+					
+				}
+				case "N": {
+					esValido = true;
+					
+					break;
+					
+				}
 
-			case " ": {
-				System.out.println("No puedes dejar en blanco este espacio");
-				
+				case " ": {
+					System.out.println("No puedes dejar en blanco este espacio");
+					
+					esValido = false;
+					
+				}
+				default:
+					System.err.println("Error al seleccionar una opcion");
+					System.out.println("Asegurese de usar caracteres validos! (Y o N.) \n");
+					
+					esValido = false;
+					
+				}
+			} else {
+				System.out.println("No se ha encontrado el perfil");
 			}
-			default:
-				System.err.println("Error al seleccionar una opcion");
-				System.out.println("Asegurese de usar caracteres validos! (Y o N.) \n");
-				
-			}
-		}
+		} while (!esValido);
+		
 	}
-	public static void menuAdminGestionaPersona(Scanner sc) {
+	
+	public static void menuAdminRegistraPersona(Scanner sc) {
+		boolean esValido = false;
+		do {
 		System.out.println("Registro de una persona\n");
 		System.out.println("Datos personales:\n");
-
+		
 		String nombreReal = validarNombreReal(sc);
 		
 		String email = validarEmail(sc);
@@ -801,17 +1057,35 @@ public class Metodos extends Objetos {
 		
 		String perfil = validarPerfilPersona(sc);
 		
+		System.out.println(perfil);
+		
 		menuSeleccionPerfil(sc, perfil);
 		
 		String nombreUsuario = validarNombreUsuario(sc);
 
 		String contrasenia = validarContrasenia(sc);
+		
+		Long id = generarIdPersona(); 
+		
+		String registroCredenciales = id + "|" + nombreUsuario + "|" + contrasenia + "|" + email + "|" + nombreReal + "|" + nacionalidad + "|" + perfil;
+		
+		esValido = true;
+		
+		listaCredenciales.add(registroCredenciales);
+		
+		} while (!esValido);
 	}
 	
 	public static void menuAdminGestionaEspectaculo(Scanner sc) {
-		validarNombreEspectaculo(sc);
+		boolean esValido = false;
+		String nombreEspectaculo = null;
+		do {
+			nombreEspectaculo = validarNombreEspectaculo(sc);
+			
+			validarFechaEspectaculo(sc);
+			
+		} while (!esValido);
 		
-		validarFechaEspectaculo(sc);
 	}
 
 	public static int menuArtista(Scanner sc, int opcion) {
@@ -902,7 +1176,6 @@ public class Metodos extends Objetos {
 		crearEspectaculosIniciales();
 		aniadirCredenciales();
 		crearCredenciales();
-		leerCredenciales();
 		leerXml();
 	}
 
