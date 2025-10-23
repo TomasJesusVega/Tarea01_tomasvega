@@ -33,6 +33,7 @@ public class Principalcirco {
 					Metodos.consumirLinea(sc);
 					
 					Metodos.menuInvitadoLogin(sc, nuevaSesion);
+					
 					break;
 					
 				}
@@ -129,11 +130,12 @@ public class Principalcirco {
 				switch (opcion) {
 				case 1: {
 					Metodos.consumirLinea(sc);
+					Metodos.menuAdminGestionaPersona(sc);
 					
 				}
 				case 2: {
 					Metodos.consumirLinea(sc);
-					
+					Metodos.menuAdminGestionaEspectaculo(sc);
 				}
 				
 				case 3: {
