@@ -22,10 +22,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Iterator;
+import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
-import entidades.Credenciales;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+
 import entidades.Perfil;
 import entidades.Sesion;
 
@@ -37,64 +45,86 @@ public class Metodos extends Objetos {
 	 * almacenara los archivos creados por el programa y/o externos
 	 */
 
-	private static ArrayList<String> datosPersonales = new ArrayList<>();
-			
-		
-	
+	private static ArrayList<String> listaCredenciales = new ArrayList<>();
+	private static ArrayList<String> listaNombrePais = new ArrayList<>();
+	private static ArrayList<String> listaIdPais = new ArrayList<>();
+
+	private static File paises = new File("src/main/resources/paises.xml");
 	private static File fichero = new File("ficheros");
+	
 	private static String rutaEspectaculo = "ficheros/espectaculo.dat";
 	private static String rutaCredenciales = "ficheros/credenciales.txt";
 
 	public static void crearFichero() {
 		if (!fichero.exists()) {
 			fichero.mkdirs();
+			
 			System.out.println("Carpeta " + fichero.getName() + " creada en " + fichero.getAbsolutePath());
+			
 		} else {
 			System.out.println("No se pudo crear la carpeta, compruebe si ya ha sido creada");
+			
 		}
 	}
 
 	public static void crearEspectaculosIniciales() {
 		if (!fichero.exists()) {
 			System.out.println("No se encontro la carpeta ficheros, compruebe si ha sido creada");
+			
 		} else if (fichero.exists()) {
 			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(rutaEspectaculo))) {
 				oos.writeObject(Objetos.espectaculos);
+				
 				System.out.println("Espectaculos.dat creada en " + fichero.getAbsolutePath());
+				
 			} catch (IOException | ClassCastException e) {
 				System.err.println("Error al crear los espectaculos en espectaculo.dat: " + e.getMessage());
+				
 			}
 		}
 	}
 
-	public static void aniadirCredenciales() {
-		datosPersonales.add("1 | Usuario | Pass | usuario@email.com | Nombre Apellido | Pais | Perfil");
-		}
 	
-
 	public static void crearCredenciales() {
 		if (!fichero.exists()) {
 			System.out.println("No se encontro la carpeta ficheros, compruebe si ha sido creada");
+			
 		} else if (fichero.exists()) {
 			try (FileWriter writer = new FileWriter(rutaCredenciales)) {
-				for (String a: datosPersonales) {
-					writer.write(a);
+				for (String credencial : listaCredenciales) {
+					writer.write(credencial + System.lineSeparator());
+					
 				}
-				System.out.println("Credenciales aniadidas"); //borrar al final
+				
 			} catch (IOException e) {
 				System.err.println("Error al crear las credenciales en credendiales.dat " + e.getMessage());
+				
 			}
 		}
 	}
 	
+	public static void aniadirCredenciales() {
+		listaCredenciales.add("1|luisdbb|miP@ss|luisdbb@educastur.org|Luis de Blas|España|coordinacion");
+		listaCredenciales.add("2|camila|cam1las|camilas@circo.es|Camila Sánchez|Bolivia|artista");
+	}
+
+
 	public static void leerCredenciales() {
 		if (!fichero.exists()) {
 			System.out.println("No se encontro la carpeta ficheros, compruebe si ha sido creada");
+			
 		} else if (fichero.exists()) {
-			try (BufferedReader br = new BufferedReader(new FileReader(rutaCredenciales))){
+			try (BufferedReader br = new BufferedReader(new FileReader(rutaCredenciales))) {
 				
+				String linea;
+				
+				while ((linea = br.readLine()) != null) {
+					listaCredenciales.add(linea);
+					
+				}
 			} catch (IOException e) {
 				System.err.println("Error al crear las credenciales en credendiales.txt " + e.getMessage());
+				
 			}
 		}
 	}
@@ -103,165 +133,378 @@ public class Metodos extends Objetos {
 	public static void leerEspectaculos() {
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(rutaEspectaculo))) {
 			Object espectaculoOis = ois.readObject();
-			System.out.println(espectaculoOis);
+			
+			System.out.println(espectaculoOis + "\n");
+			
 		} catch (IOException | ClassNotFoundException e) {
 			System.err.println("Error al leer Espectaculos.dat" + e.getMessage());
+			
+		}
+	}
+	
+	public static void leerXml() {
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbf.newDocumentBuilder();
+			
+			Document doc = dBuilder.parse(paises);
+			
+			doc.getDocumentElement().normalize();
+
+			NodeList nList = doc.getElementsByTagName("pais");
+			for (int i = 0; i < nList.getLength(); i++) {
+				Node nNode = nList.item(i);
+				
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element elementContent = (Element) nNode;
+					
+					String id = elementContent.getElementsByTagName("id").item(0).getTextContent();
+					String nombre = elementContent.getElementsByTagName("nombre").item(0).getTextContent();
+					
+					listaIdPais.add(id);
+					listaNombrePais.add(nombre);
+					
+				}
+			}
+			
+		} catch (Exception e) {
+			System.err.println("Error al cargar el documento" + e.getLocalizedMessage());
+			
 		}
 	}
 
 	// CU2 Login
-	public static void validarLoginUsuario(Scanner sc) {
-		boolean esValido = false;
-		String usuario;
+	public static boolean verificarLogin(String usuario, String contrasenia) {
 		
-		do {
-			System.out.println("Introduzca nombre de usuario");
-			usuario = sc.nextLine().trim();
-			if (!usuario.matches("[a-zA-Z]*")) {
-				System.err.println("Error al introducir el usuario");
-				System.out.println("Asegurese de usar caracteres validos! (caracteres de la A a la Z) \n");
-				esValido = true;
-			} else if (usuario.length() < 2) {
-				System.err.println("Error al introducier el usuario");
-				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
-			}
+		for (String credencial : listaCredenciales) {
+			String[] partes = credencial.split("\\s*\\|\\s*");
+			String usuarioEncontrado = partes[1].trim();
+			String contraseniaEncontrada = partes[2].trim();
 			
-		} while (!esValido);
+			if (usuarioEncontrado.equals(usuario) && contraseniaEncontrada.equals(contrasenia)) {
+				return true;
+				
+			}
+		}
+		System.err.println("Error al iniciar sesion");
+		System.out.println("Credenciales incorrectas, intentelo de nuevo\n");
+		
+		return false;
 	}
 
-	//CU2 Login
-	public static void validarLoginContrasenia(Scanner sc) {
-		boolean esValido = false;
-		String contrasenia;
-		do {
-			System.out.println("Introduzca la contrasenia");
-			contrasenia = sc.nextLine().trim();
-			if (contrasenia.length() < 2) {
-				System.err.println("Error al introducier la contrasenia");
-				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
-			} else {
-				esValido = true;
+	public static boolean verificarAdmin(String usuario, String contrasenia) {
+		Properties propiedad = new Properties();
+		try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")){
+			propiedad.load(input);
+			
+		} catch (IOException e) {
+			System.err.println("Error al cargar el archivo");
+			System.out.println("El archivo application.properties no se cargo");
+			
+		}
+		String usuarioAdmin = propiedad.getProperty("usuarioAdmin");
+        String contraseniaAdmin = propiedad.getProperty("contraseniaAdmin");
+		if (usuarioAdmin.equals(usuario) && "admin".equals(contrasenia)) {
+			
+			return true;
+		}
+		return false;
+	}
+	public static Sesion asignarPerfil(Sesion nuevaSesion) {
+		for (String credencial : listaCredenciales) {
+			String[] partes = credencial.split("\\s*\\|\\s*");
+			String usuarioActual = partes[1].trim();
+			String perfilEncontrado = partes[6].trim().toUpperCase();
+			
+			nuevaSesion.setNombre(perfilEncontrado);
+			
 			}
-		} while (!esValido);
+		if (nuevaSesion.getNombre().equalsIgnoreCase("artista")) {
+			nuevaSesion.setPerfil(Perfil.ARTISTA);
+			
+			return nuevaSesion;
+			
+		}
+		
+		if (nuevaSesion.getNombre().equalsIgnoreCase("coordinacion")) {
+			nuevaSesion.setPerfil(Perfil.COORDINACION);
+			
+			return nuevaSesion;
+			
+		}
+		
+		if (nuevaSesion.getNombre().equalsIgnoreCase("admin")) {
+			nuevaSesion.setPerfil(Perfil.ADMIN);
+			
+			return nuevaSesion;
+			
+		}
+		
+		return nuevaSesion;
 	}
 	
+	
 	// CU2 LogOut
-	public static void validarlogOut(Sesion nuevaSesion, String opcionSalir) {
+	public static void validarlogOut(Sesion nuevaSesion, Scanner sc) {
 		boolean esValido = false;
+		
+		String opcionSalir = null;
+		
 		do {
 			System.out.println("Desea cerrar la sesion? Y para si, N para no");
+			
+			opcionSalir = sc.nextLine();
+			
 			switch (opcionSalir.toUpperCase()) {
 			case "Y": {
 				nuevaSesion.setNombre("Invitado");
 				nuevaSesion.setPerfil(Perfil.INVITADO);
 				esValido = true;
 				break;
+				
 			}
 			case "N": {
 				esValido = true;
 				break;
+				
 			}
 			case " ": {
+				
 			}
 			default:
 				System.out.println("Opcion Invalida, solo se admite Y o N. \n");
+				
 			}
+			
 		} while (!esValido);
 	}
 
-	
 	// CU2 cerrar programa
 	public static boolean cerrarPrograma(Scanner sc) {
 		String opcionSalir = null;
+		
 		do {
 			System.out.println("Desea cerrar el programa? Y para si, N para no");
+			
 			opcionSalir = sc.nextLine().toUpperCase().trim();
+			
 			switch (opcionSalir) {
 			case "Y": {
 				System.out.println("Saliendo...");
 				return false;
+				
 			}
 			case "N": {
 				return true;
+				
 			}
 			case " ": {
 				System.out.println("No puedes dejar en blanco este espcio");
+				
 			}
 			default:
 				System.err.println("Error al seleccionar una opcion");
 				System.out.println("Asegurese de usar caracteres validos! (Y o N.) \n");
+				
 			}
+			
 			return true;
+			
 		} while (true);
 	}
 
-	//CU3 Registrar persona
+	public static String validarNombreReal(Scanner sc) {
+		boolean esValido = false;
+		
+		String nombre;
+		
+		do {
+			System.out.println("Introduzca el nombre de la persona");
+			
+			 nombre = sc.nextLine().trim();
+			 
+			 if (!nombre.matches("^[a-zA-Z ]+$")) {
+				System.err.println("Error al introducir el nombre");
+				System.out.println("Asegurese de usar caracteres validos! (caracteres de la A a la Z y espacios) \n");
+				esValido = false;
+			} else {
+				esValido = true;
+			}
+		} while (!esValido);
+		return nombre;
+	}
+	// CU3 Registrar persona
 	public static void validarEmail(Scanner sc) {
 		boolean esValido = false;
+		
 		String email;
-			do {
-				System.out.println("Introduzca un Email");
-				email = sc.nextLine().trim();
-				for(int i = 0; i < email.length(); i++) {
+		
+		do {
+			System.out.println("Introduzca un Email");
+			
+			email = sc.nextLine().trim();
+			
+			if (email.matches("^^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")) {
+				esValido = true;
+				
+			} else {
+				System.err.println("Error al introducir el email");
+				System.out.println("Asegurese de usar un formato valido (estandar RFC 5322)");
+				
+			}
+			
+		} while (!esValido);
+	}
+
+	public static void validarNombreUsuario(Scanner sc) {
+		boolean esValido = false;
+		
+		String nombre;
+
+		do {
+			System.out.println("Introduzca nombre de usuario");
+			
+			nombre = sc.nextLine().trim();
+
+			if (!nombre.matches("[a-zA-Z]*")) {
+				System.err.println("Error al introducir el nombre");
+				System.out.println("Asegurese de usar caracteres validos! (caracteres de la A a la Z) \n");
+				
+				esValido = true;
+
+			} else if (nombre.length() < 2) {
+				System.err.println("Error al introducier el usuario");
+				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
+				
+			}
+			
+		} while (!esValido);
+	}
+
+	public static void validarContrasenia(Scanner sc) {
+		boolean esValido = false;
+		
+		String contrasenia;
+		
+		do {
+			System.out.println("Introduzca una contrasenia");
+			
+			contrasenia = sc.nextLine().trim();
+			
+			esValido = true;
+			
+			if (contrasenia.length() < 2) {
+				System.err.println("Error al introducier el usuario");
+				System.out.println("Asegurese que la longitud no sea inferior de 2 caracteres");
+				esValido = false;
+			}
+			
+		} while (!esValido);
+	}
+
+	
+
+
+	
+	public static void validarNacionalidad(Scanner sc) {
+		boolean esValido = false;
+		boolean encontrado = false;
+		
+		String nacionalidad = null;
+		
+		do {
+			System.out.println("Introduzca el nombre o codigo del pais");
+			nacionalidad = sc.nextLine().trim();
+			
+			if (!nacionalidad.matches("^[\\p{L}][\\p{L}\\s'\\-\\.]*$")) {
+				System.err.println("Error al introducir la nacionalidad");
+				System.out.println("Asegurese de usar caracteres validos! (letras unicode, espacios, comillas simples y guiones) \n");
+				
+			} else if (nacionalidad.isEmpty()) {
+				System.err.println("Error al introducir la nacionalidad");
+				System.out.println("Asegurese de no dejar en blanco el campo");
+				
+			} else {
+				encontrado = buscarPais(nacionalidad);
+				
+				if (encontrado) {
+					esValido = true;
+					
+				} else {
+					System.err.println("Error al introducir el pais");
+					System.out.println("No se ha encontrado el pais introducido");
 					
 				}
-			} while (!esValido);
+			}
+
+		} while (!esValido);
 	}
-	
-	public static void validadNombre() {
-		
-	}
-	
-	public static void validadNacionalidad() {
-		
-	}
+
 	// CU5 a.Crear espectaculo
 	public static void validarNombreEspectaculo(Scanner sc) {
 		String nombre;
+		
 		do {
 			System.out.println("Introduzca un nombre para el espectaculo entre 1 y 25 caracteres:");
-			nombre = sc.nextLine();
+			
+			nombre = sc.nextLine().trim();
+			
 			if (nombre.length() > 25 || nombre.length() == 0) {
 				System.out.println("Error al registrar el nombre, debe tener entre 1 y 25 caracteres");
+				
 			} else if (nombre.isEmpty()) {
 				System.out.println();
+				
 			}
+			
 		} while (nombre.isEmpty() && nombre.length() > 25);
 	}
 
 	// CU5 a.Crear espectaculo
 	public static void validarFechaEspectaculo(Scanner sc) {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		
 		String fecha = null;
+		
 		LocalDate fechaInicial = null;
 		LocalDate fechaFinal = null;
+		
 		boolean esValido = false;
 
 		do {
 			try {
 				System.out.println("Introduzca la fecha de inicio del espectaculo");
+				
 				fecha = sc.nextLine().trim();
+				
 				fechaInicial = LocalDate.parse(fecha, dtf);
 
 				System.out.println("Introduzca la fecha final del espectaculo");
+				
 				fecha = sc.nextLine().trim();
+				
 				fechaFinal = LocalDate.parse(fecha, dtf);
 
 				Period duracion = Period.between(fechaInicial, fechaFinal);
 
 				if (fechaFinal.isBefore(fechaInicial)) {
 					System.out.println("La fecha final no puede ser anterior a la fecha inicial del espectaculo");
+					
 				} else if (duracion.getYears() >= 1) {
 					System.out.println("La duracion del espectaculo no puede exceder el anio");
+					
 				} else {
 					System.out.println("Espectaculo aniadido con exito");
 					esValido = true;
+					
 				}
 
 			} catch (DateTimeParseException e) {
 				System.err.println("Error en el formato de las fechas ");
 				System.out.println("Asegurese de usar el formato correcto! (dd-mm-aaaa)");
+				
 			}
+	
 		} while (!esValido);
 	}
 
@@ -269,121 +512,320 @@ public class Metodos extends Objetos {
 
 	}
 
+	public static boolean buscarNombreReal(String nombre) {
+		for (String credencial : listaCredenciales) {
+			String[] partes = credencial.split("\\s*\\|\\s*");
+			String usuarioActual = partes[1].trim();
+			String nombreRealEncontrado = partes[4].trim().toUpperCase();
+			
+			if (nombreRealEncontrado.equalsIgnoreCase(nombre)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean buscarEmail(String email) {
+		for (String credencial : listaCredenciales) {
+			String[] partes = credencial.split("\\s*\\|\\s*");
+			String usuarioActual = partes[1].trim();
+			String emailEncontrado = partes[4].trim().toUpperCase();
+			
+			if (emailEncontrado.equalsIgnoreCase(email)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean buscarPais(String nacionalidad) {
+		for (String nom : listaNombrePais) {
+			if (nom.equalsIgnoreCase(nacionalidad)) {
+				System.out.println("Pais seleccionado: " + nom);
+				
+				return true;
+			}
+		}
+
+		for (String id : listaIdPais) {
+			if (id.equalsIgnoreCase(nacionalidad)) {
+				System.out.println("Pais seleccionado: " + id);
+				
+				return true;
+				
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean buscarNombreUsuario(String nombre) {
+		for (String credencial : listaCredenciales) {
+			String[] partes = credencial.split("\\s*\\|\\s*");
+			String usuarioActual = partes[1].trim();
+			String nombreUsuarioEncontrado = partes[4].trim().toUpperCase();
+			
+			if (nombreUsuarioEncontrado.equalsIgnoreCase(nombre)) {
+				return true;
+				
+			}
+		}
+		return false;
+	}
+	
 	public static void consumirLinea(Scanner sc) {
 		if (sc.hasNextLine()) {
 			sc.nextLine();
+			
 		}
 	}
-	
+
 	public static void nuevoId() {
-		
+
 	}
-	
+
 	// Metodos menu
 	// IMPORTANTE nextInt no consume linea de scanner, usar metodo consumirLinea
 	// para que no salte exepcion despues de llamar a un metodo menu
 	public static int menuInvitado(Scanner sc, int opcion) {
 		boolean esValido = false;
+		
 		do {
 			try {
 				System.out.println("Introduzca el numero al lado de la opcion para seleccionarla");
 				System.out.println("1. Login");
 				System.out.println("2. Ver espectaculos");
 				System.out.println("3. Cerrar programa");
+				
 				opcion = sc.nextInt();
+				
 				if (opcion > 0 && opcion <= 3) {
 					esValido = true;
+					
 				}
+				
 			} catch (InputMismatchException e) {
 				System.err.println("Error al seleccionar una opcion");
 				System.out.println("Asegurese de introducir caracteres validos! (digitos del 1 al 3)");
+				
 				sc.nextLine();
 			}
+			
 		} while (!esValido);
+		
 		return opcion;
 	}
 
-	public static void menuInvitadoLogin(Scanner sc) {
-		boolean esValido = false;
+	public static Sesion menuInvitadoLogin(Scanner sc, Sesion nuevaSesion) {
+		boolean sesionIniciada = false;
+		boolean esAdmin = false;
+		
 		String usuario = null;
 		String contrasenia = null;
+		
 		do {
 			try {
 				System.out.println("Inicio de Sesion");
-				System.out.println("Introduzca el nombre Usuario:");
+				System.out.println("Introduzca el nombre usuario:");
+				
 				usuario = sc.nextLine().trim();
-				System.out.println("Introduzca la contrasenia :");
+				
+				System.out.println("Introduzca la contrasenia:");
+				
 				contrasenia = sc.nextLine().trim();
-				System.out.println(usuario);
-				System.out.println(contrasenia);
-				esValido = true;
+				
+				sesionIniciada = verificarLogin(usuario, contrasenia);
+				esAdmin = verificarAdmin(usuario, contrasenia);
+				
+				nuevaSesion = asignarPerfil(nuevaSesion);
+				
 			} catch (InputMismatchException e) {
 				System.err.println("Error al seleccionar una opcion");
 				System.out.println("Asegurese de introducir caracteres validos! (cualquier caracter?)");
+				
 			}
-		} while (!esValido);
-		
+			
+		} while (!sesionIniciada);
+		return nuevaSesion;
 	}
 
 	public static int menuAdmin(Scanner sc, int opcion) {
 		boolean esValido = false;
+		
 		do {
 			try {
 				System.out.println("Introduzca el numero al lado de la opcion para seleccionarla");
 				System.out.println("1. Gestionar personas y credenciales");
 				System.out.println("2. Gestionar espectaculos");
 				System.out.println("3. Logout");
+				
 				opcion = sc.nextInt();
+				
 				if (opcion > 0 && opcion <= 3) {
 					esValido = true;
+					
 				}
 			} catch (InputMismatchException e) {
 				System.err.println("Error al seleccionar una opcion");
 				System.out.println("Asegurese de introducir caracteres validos! (digitos del 1 al 3)");
+				
 				sc.nextLine();
+				
 			}
+			
 		} while (!esValido);
+		
 		return opcion;
+	}
+
+	public static void menuAdminGestionaPersona(Scanner sc) {
+		System.out.println("Registro de una persona\n");
+		System.out.println("Datos personales:\n");
+		validarNombreReal(sc);
+		
+		System.out.println("Introduzca el email de la persona");
+		
+		String email = sc.nextLine();
+		
+		validarEmail(sc);
+		
+		System.out.println("Introduzca la nacionalidad de la persona");
+		
+		String nacionalidad = sc.nextLine();
+		
+		validarNacionalidad(sc);
+		
+		System.out.println("Introduzca el perfil de la persona");
+		
+		String perfil = sc.nextLine();
+		
+		if (perfil.equalsIgnoreCase("Artista")) {
+			System.out.println("Introduzca el apodo de la persona artista");
+			
+			String apodo = sc.nextLine();
+			
+			System.out.println("Introduzca las especialidades del artista");
+			
+			String especialidades = sc.nextLine();
+			
+		}
+		
+		if (perfil.equalsIgnoreCase("Coordinacion")) {
+			System.out.println("Es el la persona coordinadora senior? Y para si, N para no");
+			
+			String esSenior = sc.nextLine();
+			
+			switch (esSenior) {
+			case "Y": {
+				System.out.println("Introduzca la fecha en la que empezo a ser senior");
+				break;
+				
+			}
+			case "N": {
+				break;
+				
+			}
+
+			case " ": {
+				System.out.println("No puedes dejar en blanco este espacio");
+				
+			}
+			default:
+				System.err.println("Error al seleccionar una opcion");
+				System.out.println("Asegurese de usar caracteres validos! (Y o N.) \n");
+				
+			}
+		}
+
+		System.out.println("Introduzca credencial de usuario de la persona");
+		
+		validarNombreUsuario(sc);
+		
+		System.out.println("Introduzca una contrasenia para la persona");
+		
+//		validarContrasenia(sc);
 	}
 
 	public static int menuArtista(Scanner sc, int opcion) {
 		boolean esValido = false;
+		
 		do {
 			try {
 				System.out.println("Introduzca el numero al lado de la opcion para seleccionarla");
 				System.out.println("1. Ver ficha");
 				System.out.println("2. Logout");
+				
 				opcion = sc.nextInt();
-				if (opcion > 0 && opcion <= 3) {
+				
+				if (opcion > 0 && opcion <= 2) {
 					esValido = true;
 				}
 			} catch (InputMismatchException e) {
 				System.err.println("Error al seleccionar una opcion");
 				System.out.println("Asegurese de introducir caracteres validos! (digitos del 1 al 2)");
+				
 				sc.nextLine();
+				
 			}
+			
 		} while (!esValido);
+		
 		return opcion;
 	}
 
 	public static int menuCoordinacion(Scanner sc, int opcion) {
 		boolean esValido = false;
+		
 		do {
 			try {
 				System.out.println("Introduzca el numero al lado de la opcion para seleccionarla");
 				System.out.println("1. Gestionar Espectaculos");
 				System.out.println("2. Logout");
+				
 				opcion = sc.nextInt();
-				if (opcion > 0 && opcion <= 3) {
+				
+				if (opcion > 0 && opcion <= 2) {
 					esValido = true;
 				}
+				
 			} catch (InputMismatchException e) {
 				System.err.println("Error al seleccionar una opcion");
 				System.out.println("Asegurese de introducir caracteres validos! (digitos del 1 al 2)");
 				sc.nextLine();
 			}
+			
 		} while (!esValido);
+		
 		return opcion;
+	}
+
+	public static int menuCoordinacionGestion(Scanner sc, int segundaOpcion) {
+		boolean esValido = false;
+		
+		do {
+			try {
+				System.out.println("Gestion de espectaculos\n");
+				System.out.println("1. Crear espectaculo");
+				System.out.println("2. Modificar espectaculo existente");
+				
+				segundaOpcion = sc.nextInt();
+				
+				if (segundaOpcion > 0 && segundaOpcion <= 2) {
+					
+					esValido = true;
+				}
+				
+			} catch (InputMismatchException e) {
+				System.err.println("Error al seleccionar una opcion");
+				System.out.println("Asegurese de introducir caracteres validos! (digitos del 1 al 2)");
+				
+				sc.nextLine();
+			}
+			
+		} while (!esValido);
+		
+		return segundaOpcion;
+
 	}
 
 	// Agrupacion de metodos
@@ -392,6 +834,7 @@ public class Metodos extends Objetos {
 		crearEspectaculosIniciales();
 		aniadirCredenciales();
 		crearCredenciales();
+		leerCredenciales();
 	}
 
 	public static void crearespectaculo(Scanner sc) {
