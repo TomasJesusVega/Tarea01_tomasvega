@@ -98,6 +98,9 @@ public class Metodos extends Objetos {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public static void crearCredenciales() {
 		if (!fichero.exists()) {
 			System.out.println("No se encontro la carpeta ficheros, compruebe si ha sido creada");
@@ -116,6 +119,9 @@ public class Metodos extends Objetos {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public static void mostrarCredenciales() {
 	    if (listaCredenciales.isEmpty()) {
 	        System.out.println("No hay credenciales registradas para mostrar.");
@@ -126,7 +132,10 @@ public class Metodos extends Objetos {
 	        }
 	    }
 	}
-	// CU1 ver espectaculos
+	
+	/**
+	 * 
+	 */
 	public static void leerEspectaculos() {
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(rutaEspectaculo))) {
 			Object espectaculoOis = ois.readObject();
@@ -139,6 +148,9 @@ public class Metodos extends Objetos {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public static void leerXml() {
 		try {
 			listaIdPais.clear();
@@ -186,12 +198,14 @@ public class Metodos extends Objetos {
 			
 			if (usuarioEncontrado.equals(usuario) && contraseniaEncontrada.equals(contrasenia)) {
 				System.out.println("Sesion iniciada correctamente\n");
+				
 				return true;
 				
 			}
 		}
 		System.err.println("Error al iniciar sesion");
 		System.out.println("Credenciales invalidas, vuelva a intentarlo");
+		
 		return false;
 		
 	}
@@ -219,14 +233,13 @@ public class Metodos extends Objetos {
 
 			if (usuarioAdmin.equals(usuario) && contraseniaAdmin.equals(contrasenia)) {
 				System.out.println("Sesion iniciada correctamente vA");
+				
 				return true;
 				
-				
 			} else {
-				
 				return false;
-			}
-		
+				
+			}		
 	}
 	
 	/**
@@ -242,7 +255,9 @@ public class Metodos extends Objetos {
 				nuevaSesion.setPerfil(Perfil.ADMIN);
 				return nuevaSesion;
 			}
+			
 			return null;
+			
 	}
 	
 	/**
@@ -311,7 +326,9 @@ public class Metodos extends Objetos {
 			case " ": {
 				System.err.println("Error al introducir la opcion");
 				System.out.println("Asegurese de no dejar en blanco el campo\n");
+				
 				break;
+				
 			}
 			default:
 				System.out.println("Opcion Invalida, solo se admite Y o N. \n");
@@ -321,12 +338,16 @@ public class Metodos extends Objetos {
 		} while (!esValido);
 	}
 
-	// CU2 cerrar programa
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public static boolean cerrarPrograma(Scanner sc) {
 		String opcionSalir = null;
 		
 		do {
-			System.out.println("Desea cerrar el programa? Y para si, N para no");
+			System.out.println("Desea cerrar el programa? Si / No");
 			
 			opcionSalir = sc.nextLine().toUpperCase().trim();
 			
@@ -356,6 +377,11 @@ public class Metodos extends Objetos {
 		} while (true);
 	}
 
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public static String validarNombreReal(Scanner sc) {
 		boolean esValido = false;
 		
@@ -380,7 +406,12 @@ public class Metodos extends Objetos {
 		} while (!esValido);
 		return nombre;
 	}
-	// CU3 Registrar persona
+	
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public static String validarEmail(Scanner sc) {
 		boolean esValido = false;
 		
@@ -664,6 +695,11 @@ public class Metodos extends Objetos {
 		return perfil;
 	}
 	
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public static String validarApodo(Scanner sc) {
 		boolean esValido = false;
 		
@@ -701,6 +737,11 @@ public class Metodos extends Objetos {
 		
 	}
 	
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public static String validarEspecialidad(Scanner sc) {
 		boolean esValido = false;
 		
@@ -761,6 +802,11 @@ public class Metodos extends Objetos {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param nacionalidad
+	 * @return
+	 */
 	public static boolean buscarPais(String nacionalidad) {
 		for (String nombre : listaNombrePais) {
 			if (nombre.equalsIgnoreCase(nacionalidad)) {
@@ -999,13 +1045,17 @@ public class Metodos extends Objetos {
 		return opcion;
 	}
 
-	
-	
+	/**
+	 * 
+	 * @param sc
+	 * @param perfil
+	 */
 	public static void menuSeleccionPerfil(Scanner sc, String perfil) {
 		boolean esValido = false;
+		String apodo = null;
 		do {
 			if (perfil.equalsIgnoreCase("ARTISTA")) {
-				String apodo = validarApodo(sc);
+				apodo = validarApodo(sc);
 				
 				String especialidad = validarEspecialidad(sc);
 				esValido = true;
@@ -1053,6 +1103,10 @@ public class Metodos extends Objetos {
 		
 	}
 	
+	/**
+	 * 
+	 * @param sc
+	 */
 	public static void menuAdminRegistraPersona(Scanner sc) {
 		boolean esValido = false;
 		do {
@@ -1097,7 +1151,13 @@ public class Metodos extends Objetos {
 		} while (!esValido);
 		
 	}
-
+	
+	/**
+	 * 
+	 * @param sc
+	 * @param opcion
+	 * @return
+	 */
 	public static int menuArtista(Scanner sc, int opcion) {
 		boolean esValido = false;
 		
@@ -1124,7 +1184,13 @@ public class Metodos extends Objetos {
 		
 		return opcion;
 	}
-
+	
+	/**
+	 * 
+	 * @param sc
+	 * @param opcion
+	 * @return
+	 */
 	public static int menuCoordinacion(Scanner sc, int opcion) {
 		boolean esValido = false;
 		
@@ -1150,7 +1216,13 @@ public class Metodos extends Objetos {
 		
 		return opcion;
 	}
-
+	
+	/**
+	 * 
+	 * @param sc
+	 * @param segundaOpcion
+	 * @return
+	 */
 	public static int menuCoordinacionGestion(Scanner sc, int segundaOpcion) {
 		boolean esValido = false;
 		
@@ -1180,7 +1252,9 @@ public class Metodos extends Objetos {
 
 	}
 
-	// Agrupacion de metodos
+	/**
+	 * 
+	 */
 	public static void iniciarPrograma() {
 		crearFichero();
 		crearEspectaculosIniciales();
@@ -1188,7 +1262,11 @@ public class Metodos extends Objetos {
 		crearCredenciales();
 		leerXml();
 	}
-
+	
+	/**
+	 * 
+	 * @param sc
+	 */
 	public static void crearespectaculo(Scanner sc) {
 		validarNombreEspectaculo(sc);
 		validarFechaEspectaculo(sc);

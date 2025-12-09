@@ -6,6 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Espectaculo implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2493074657655538462L;
 	private Long id;
 	private String nombre;
 	private LocalDate fechaini;
